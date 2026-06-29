@@ -1,0 +1,266 @@
+<html>
+
+<head>
+    
+    <title>Weather — Dashboard</title>
+        <!-- Fonts: Space Grotesk for display numerals/headings, Inter for UI text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="data:,">
+</head>
+
+<body>
+
+    <div id="weatherAnimation" aria-hidden="true"></div>
+    <div id="bgGlow" aria-hidden="true"></div>
+
+    <div class="app">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div class="brand">
+                <img src ="C:\Users\Somya\OneDrive\Pictures\cloudie-logo.png.png" height="50px" width="50px">
+                <span>Cloudie</span>
+            </div>
+
+            <form class="search" id="searchForm" role="search">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="cityInput" placeholder="Search city…" autocomplete="off" aria-label="Search city">
+                <button type="button" id="voiceBtn" title="Voice search" aria-label="Voice search">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+            </form>
+
+            <div class="topbar-actions">
+                <button class="icon-btn" id="locationBtn" title="Use current location" aria-label="Current location">
+                    <i class="fa-solid fa-location-crosshairs"></i>
+                </button>
+                <button class="icon-btn" id="favoritesBtn" title="Favorites" aria-label="Favorites">
+                    <i class="fa-solid fa-star"></i>
+                </button>
+                <button class="icon-btn" id="historyBtn" title="Recent searches" aria-label="Recent searches">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </button>
+                <button class="icon-btn" id="darkModeBtn" title="Toggle theme" aria-label="Toggle theme">
+                    <i class="fa-solid fa-sun"></i>
+                </button>
+            </div>
+
+        </header>
+
+        <div id="loader" role="status" aria-live="polite">
+            <span class="spinner"></span> Loading…
+        </div>
+
+        <main>
+
+            <!-- HERO -->
+            <section class="hero" id="hero">
+
+                <div class="hero-top">
+                    <div class="hero-location">
+                        <h1 id="cityName">--</h1>
+                        <p id="condition">--</p>
+                    </div>
+                    <div class="hero-clock">
+                        <p id="dateText"></p>
+                        <p id="timeText"></p>
+                    </div>
+                </div>
+
+                <div class="hero-main">
+
+                    <div class="hero-temp-block">
+                        <canvas id="sparkline" aria-hidden="true"></canvas>
+                        <div class="temp-row">
+                            <h2 id="temp">--°</h2>
+                            <img id="weatherIcon" src="" alt="" width="84" height="84" style="display:none;">
+                        </div>
+                        <div class="temp-controls">
+                            <button id="unitBtn" type="button">°F</button>
+                            <span id="feelsLike" class="feels-like">Feels like --°</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <i class="fa-solid fa-wind"></i>
+                            <div>
+                                <span id="wind">-- km/h</span>
+                                <small id="windDirection"></small>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <i class="fa-solid fa-droplet"></i>
+                            <div>
+                                <span id="humidity">--</span>
+                                <small>Humidity</small>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <i class="fa-solid fa-temperature-high"></i>
+                            <div>
+                                <span id="maxTemp">--°</span>
+                                <small>High</small>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <i class="fa-solid fa-temperature-low"></i>
+                            <div>
+                                <span id="minTemp">--°</span>
+                                <small>Low</small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button id="favoriteBtn" type="button">
+                    <i class="fa-solid fa-star"></i> Add to favorites
+                </button>
+
+            </section>
+
+            <!-- HOURLY + CHART -->
+            <section class="panel">
+                <h3 class="panel-label">Hourly forecast</h3>
+                <div class="chart-wrap">
+                    <canvas id="tempChart"></canvas>
+                </div>
+                <div class="hourly-row" id="hourlyContainer">
+                    <div class="hour-card">
+                        <p>Loading…</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GRID  -->
+            <section class="grid">
+
+                <!-- 5-DAY -->
+                <div class="panel">
+                    <h3 class="panel-label">5-day forecast</h3>
+                    <div class="forecast-list" id="forecastList"></div>
+                </div>
+
+                <!-- HIGHLIGHTS -->
+                <div class="panel">
+                    <h3 class="panel-label">Highlights</h3>
+                    <div class="highlight-grid">
+
+                        <div class="highlight">
+                            <i class="fa-solid fa-eye"></i>
+                            <div>
+                                <span id="visibility">-- km</span>
+                                <small>Visibility</small>
+                            </div>
+                        </div>
+
+                        <div class="highlight">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            <div>
+                                <span id="pressure">-- hPa</span>
+                                <small>Pressure</small>
+                            </div>
+                        </div>
+
+                        <div class="highlight">
+                            <i class="fa-solid fa-cloud-rain"></i>
+                            <div>
+                                <span id="rainChance">--%</span>
+                                <small id="rainStatus">Chance of rain</small>
+                            </div>
+                        </div>
+
+                        <div class="highlight">
+                            <i class="fa-solid fa-smog"></i>
+                            <div>
+                                <span id="aqiScore">--</span>
+                                <small id="aqiStatus">Air quality</small>
+                            </div>
+                        </div>
+
+                    </div>
+                    <p class="tip" id="weatherTip">--</p>
+                </div>
+
+                <!-- SUN / DAY PROGRESS / MAP -->
+                <div class="panel">
+                    <h3 class="panel-label">Sun &amp; day</h3>
+
+                    <div class="sun-row">
+                        <div class="sun-item">
+                            <i class="fa-solid fa-arrow-up" style="color:#f5a623;"></i>
+                            <div>
+                                <span id="sunriseTime">--:--</span>
+                                <small>Sunrise</small>
+                            </div>
+                        </div>
+                        <div class="sun-item">
+                            <i class="fa-solid fa-arrow-down" style="color:#5b8def;"></i>
+                            <div>
+                                <span id="sunsetTime">--:--</span>
+                                <small>Sunset</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div id="dayProgressFill"></div>
+                    </div>
+                    <div class="progress-meta">
+                        <span id="dayProgressPercent">0%</span>
+                        <span id="dayProgressText">Calculating…</span>
+                    </div>
+
+                    <div class="map-inline">
+                        <iframe id="weatherMap" loading="lazy" title="Location map"></iframe>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- HISTORY POPUP -->
+    <aside id="historyPopup" class="popup" aria-label="Recent searches">
+        <div class="popup-header">
+            <h3>Recent searches</h3>
+            <button id="closeHistory" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="historyList"></div>
+        <button id="clearHistoryBtn" type="button">
+            <i class="fa-solid fa-trash"></i> Clear history
+        </button>
+    </aside>
+
+    <!-- FAVORITES POPUP  -->
+    <aside id="favoritesPopup" class="popup" aria-label="Favorite cities">
+        <div class="popup-header">
+            <h3>Favorite cities</h3>
+            <button id="closeFavorites" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="favoritesList"></div>
+        <button id="clearFavoritesBtn" type="button">
+            <i class="fa-solid fa-trash"></i> Clear favorites
+        </button>
+    </aside>
+
+    <div class="popup-backdrop" id="popupBackdrop"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
